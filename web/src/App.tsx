@@ -19,7 +19,7 @@ import type {
 type Page = 'competition' | 'trader';
 
 function App() {
-  const { language, setLanguage } = useLanguage();
+  const { language } = useLanguage();
   const [currentPage, setCurrentPage] = useState<Page>('competition');
   const [selectedTraderId, setSelectedTraderId] = useState<string | undefined>();
   const [lastUpdate, setLastUpdate] = useState<string>('--:--:--');
