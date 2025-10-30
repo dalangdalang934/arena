@@ -2,8 +2,8 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { t } from '../i18n/translations';
 
 type Props = {
-  currentPage: 'competition' | 'trader';
-  onChangePage: (p: 'competition' | 'trader') => void;
+  currentPage: 'home' | 'leaderboard' | 'models';
+  onChangePage: (p: 'home' | 'leaderboard' | 'models') => void;
 };
 
 export default function Header({ currentPage, onChangePage }: Props) {
@@ -29,26 +29,37 @@ export default function Header({ currentPage, onChangePage }: Props) {
         {/* 中：主导航（绝对居中） */}
         <nav className="absolute left-1/2 -translate-x-1/2 flex items-center gap-4" aria-label="Primary">
           <button
-            onClick={() => onChangePage('competition')}
+            onClick={() => onChangePage('home')}
             className="px-3 py-1.5 rounded chip-btn"
             style={
-              currentPage === 'competition'
+              currentPage === 'home'
                 ? { background: 'var(--binance-yellow)', color: '#000' }
                 : { color: 'var(--text-secondary)', border: '1px solid var(--panel-border)' }
             }
           >
-            {t('competition', language)}
+            实盘
           </button>
           <button
-            onClick={() => onChangePage('trader')}
+            onClick={() => onChangePage('leaderboard')}
             className="px-3 py-1.5 rounded chip-btn"
             style={
-              currentPage === 'trader'
+              currentPage === 'leaderboard'
                 ? { background: 'var(--binance-yellow)', color: '#000' }
                 : { color: 'var(--text-secondary)', border: '1px solid var(--panel-border)' }
             }
           >
-            {t('details', language)}
+            排行榜
+          </button>
+          <button
+            onClick={() => onChangePage('models')}
+            className="px-3 py-1.5 rounded chip-btn"
+            style={
+              currentPage === 'models'
+                ? { background: 'var(--binance-yellow)', color: '#000' }
+                : { color: 'var(--text-secondary)', border: '1px solid var(--panel-border)' }
+            }
+          >
+            模型
           </button>
         </nav>
 

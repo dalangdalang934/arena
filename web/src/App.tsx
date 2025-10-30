@@ -7,6 +7,7 @@ import AILearning from './components/AILearning';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import { t, type Language } from './i18n/translations';
 import Header from './components/Header';
+import PriceTicker from './components/PriceTicker';
 import type {
   SystemStatus,
   AccountInfo,
@@ -16,11 +17,11 @@ import type {
   TraderInfo,
 } from './types';
 
-type Page = 'competition' | 'trader';
+type Page = 'home' | 'leaderboard' | 'models';
 
 function App() {
   const { language } = useLanguage();
-  const [currentPage, setCurrentPage] = useState<Page>('competition');
+  const [currentPage, setCurrentPage] = useState<Page>('home');
   const [selectedTraderId, setSelectedTraderId] = useState<string | undefined>();
   const [lastUpdate, setLastUpdate] = useState<string>('--:--:--');
 
@@ -38,7 +39,7 @@ function App() {
 
   // 如果在trader页面，获取该trader的数据
   const { data: status } = useSWR<SystemStatus>(
-    currentPage === 'trader' && selectedTraderId
+    currentPage === 'models' && selectedTraderId
       ? `status-${selectedTraderId}`
       : null,
     () => api.getStatus(selectedTraderId),
@@ -50,7 +51,7 @@ function App() {
   );
 
   const { data: account } = useSWR<AccountInfo>(
-    currentPage === 'trader' && selectedTraderId
+    currentPage === 'models' && selectedTraderId
       ? `account-${selectedTraderId}`
       : null,
     () => api.getAccount(selectedTraderId),
@@ -62,7 +63,7 @@ function App() {
   );
 
   const { data: positions } = useSWR<Position[]>(
-    currentPage === 'trader' && selectedTraderId
+    currentPage === 'models' && selectedTraderId
       ? `positions-${selectedTraderId}`
       : null,
     () => api.getPositions(selectedTraderId),
@@ -74,7 +75,7 @@ function App() {
   );
 
   const { data: decisions } = useSWR<DecisionRecord[]>(
-    currentPage === 'trader' && selectedTraderId
+    currentPage === 'models' && selectedTraderId
       ? `decisions/latest-${selectedTraderId}`
       : null,
     () => api.getLatestDecisions(selectedTraderId),
@@ -82,7 +83,7 @@ function App() {
   );
 
   const { data: stats } = useSWR<Statistics>(
-    currentPage === 'trader' && selectedTraderId
+    currentPage === 'models' && selectedTraderId
       ? `statistics-${selectedTraderId}`
       : null,
     () => api.getStatistics(selectedTraderId),
@@ -101,11 +102,12 @@ function App() {
   return (
     <div className="min-h-screen" style={{ background: '#0B0E11', color: '#EAECEF' }}>
       <Header currentPage={currentPage} onChangePage={setCurrentPage} />
+      <PriceTicker />
 
       {/* Main Content */}
       <main className="max-w-[1920px] mx-auto px-6 py-6">
-        {/* 仅在交易员详情页：顶部筛选条（与 nof0 导航搭配） */}
-        {currentPage === 'trader' && (
+        {/* 仅在“模型”页显示顶部筛选条（对齐 f0 模型页） */}
+        {currentPage === 'models' && (
           <div className="mb-4 flex items-center gap-3">
             {traders && traders.length > 0 && (
               <select
@@ -140,9 +142,9 @@ function App() {
             )}
           </div>
         )}
-        {currentPage === 'competition' ? (
-          <CompetitionPage />
-        ) : (
+        {currentPage === 'home' && <CompetitionPage />}
+        {currentPage === 'leaderboard' && <CompetitionPage />}
+        {currentPage === 'models' && (
           <TraderDetailsPage
             selectedTrader={selectedTrader}
             status={status}
