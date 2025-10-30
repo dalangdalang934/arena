@@ -8,6 +8,9 @@ import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import { t, type Language } from './i18n/translations';
 import Header from './components/Header';
 import PriceTicker from './components/PriceTicker';
+import ModelSelectorBar from './components/ModelSelectorBar';
+import ModelStatsSummary from './components/ModelStatsSummary';
+import RightTabs from './components/RightTabs';
 import type {
   SystemStatus,
   AccountInfo,
@@ -108,53 +111,30 @@ function App() {
       <main className="max-w-[1920px] mx-auto px-6 py-6">
         {/* 仅在“模型”页显示顶部筛选条（对齐 f0 模型页） */}
         {currentPage === 'models' && (
-          <div className="mb-4 flex items-center gap-3">
-            {traders && traders.length > 0 && (
-              <select
-                value={selectedTraderId}
-                onChange={(e) => setSelectedTraderId(e.target.value)}
-                className="rounded px-3 py-2 text-sm font-medium cursor-pointer transition-colors"
-                style={{ background: '#1E2329', border: '1px solid #2B3139', color: '#EAECEF' }}
-              >
-                {traders.map((trader) => (
-                  <option key={trader.trader_id} value={trader.trader_id}>
-                    {trader.trader_name} ({trader.ai_model.toUpperCase()})
-                  </option>
-                ))}
-              </select>
-            )}
-            {status && (
-              <div
-                className="flex items-center gap-2 px-3 py-2 rounded"
-                style={status.is_running
-                  ? { background: 'rgba(14, 203, 129, 0.1)', color: '#0ECB81', border: '1px solid rgba(14, 203, 129, 0.2)' }
-                  : { background: 'rgba(246, 70, 93, 0.1)', color: '#F6465D', border: '1px solid rgba(246, 70, 93, 0.2)' }
-                }
-              >
-                <div
-                  className={`w-2 h-2 rounded-full ${status.is_running ? 'pulse-glow' : ''}`}
-                  style={{ background: status.is_running ? '#0ECB81' : '#F6465D' }}
-                />
-                <span className="font-semibold mono text-xs">
-                  {t(status.is_running ? 'running' : 'stopped', language)}
-                </span>
-              </div>
-            )}
-          </div>
+          <ModelSelectorBar
+            traders={traders}
+            selectedTraderId={selectedTraderId}
+            onChange={setSelectedTraderId}
+            status={status}
+          />
         )}
         {currentPage === 'home' && <CompetitionPage />}
         {currentPage === 'leaderboard' && <CompetitionPage />}
         {currentPage === 'models' && (
-          <TraderDetailsPage
-            selectedTrader={selectedTrader}
-            status={status}
-            account={account}
-            positions={positions}
-            decisions={decisions}
-            stats={stats}
-            lastUpdate={lastUpdate}
-            language={language}
-          />
+          <div>
+            <ModelStatsSummary account={account} />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <div className="space-y-6">
+                <div className="animate-slide-in" style={{ animationDelay: '0.1s' }}>
+                  <EquityChart traderId={selectedTrader?.trader_id || ''} />
+                </div>
+              </div>
+              <RightTabs positions={positions} decisions={decisions} language={language} />
+            </div>
+            <div className="mb-6 animate-slide-in" style={{ animationDelay: '0.3s' }}>
+              {selectedTrader && <AILearning traderId={selectedTrader.trader_id} />}
+            </div>
+          </div>
         )}
       </main>
 
